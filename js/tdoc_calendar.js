@@ -1,47 +1,54 @@
 //JS code for perpetual AOWE shift calendar
-//Version: 06Feb2022
+//Version: 13Feb2025
 //Author: Ken Nyman, AOWEB, 571-557-9887, kenneth.d.nyman@nga.mil
 
 var m_skedStart = new Date("October 11, 2015");
 
 var m_teams=["blue","green","red","purple"];
 
-
 function getSkedPattern(color){
-	var thePattern, year = parseInt(document.getElementById("lblYear").innerText);
-	//D=days, N=nights, A=weekdays, B=weekends, T=telework;
+	var year = parseInt(document.getElementById("lblYear").innerText);
+	//D=days, N=nights, A=weekdays, B=weekends, T=telework, d=half days, n=half nights;
 	console.log("color=" + color + "; year=" + year + "year<2022=", (year < 2022));
 	if(color=="red"){
 		if(year<2021){
 			thePattern=["NB","NB","NB","NA","NA","NA","DB","DB","DB","DA","DA","DA"];
 		}else if(year==2021){
 			thePattern=["NB","NBT","NB","NAT","NA","NAT","DB","DBT","DB","DAT","DA","DAT"];
-		}else{
+		}else if(year > 2021 && year < 2025){
 			thePattern=["NB","NBT","NB","NAT","NA","NAT","DB","DBT","DB","DAT","DA","DAT"];
+		}else{
+			thePattern=["dB","NBT","NB","NAT","NA","NAT","nB","DBT","DB","DAT","DA","DAT"];
 		}
 	}else if(color=="purple"){
 		if(year<2021){
 			thePattern=["NA","NA","NA","NB","NB","NB","DA","DA","DA","DB","DB","DB"];
 		}else if(year==2021){
 			thePattern=["NAT","NA","NAT","NB","NBT","NB","DAT","DA","DAT","DB","DBT","DB"];
-		}else{
+		}else if(year > 2021 && year < 2025){
 			thePattern=["NAT","NA","NAT","NB","NBT","NB","DAT","DA","DAT","DB","DBT","DB"];
+		}else{
+			thePattern=["NAT","NA","NAT","NB","NBT","nB","DAT","DA","DAT","DB","DBT","dB"];
 		}
 	}else if(color=="blue"){
 		if(year<2021){
 			thePattern=["DB","DB","DB","DA","DA","DA","NB","NB","NB","NA","NA","NA"];
 		}else if(year==2021){
 			thePattern=["DBT","DB","DBT","DA","DAT","DA","NBT","NB","NBT","NA","NAT","NA"];
-		}else{
+		}else if(year > 2021 && year < 2025){
 			thePattern=["DB","DBT","DB","DAT","DA","DAT","NB","NBT","NB","NAT","NA","NAT"];
+		}else{
+			thePattern=["nB","DBT","DB","DAT","DA","DAT","dB","NBT","NB","NAT","NA","NAT"];
 		}
 	}else if(color=="green"){
 		if(year<2021){
 			thePattern=["DA","DA","DA","DB","DB","DB","NA","NA","NA","NB","NB","NB"];
 		}else if(year==2021){
 			thePattern=["DA","DAT","DA","DBT","DB","DBT","NA","NAT","NA","NBT","NB","NBT"];
-		}else{
+		}else if(year > 2021 && year < 2025){
 			thePattern=["DAT","DA","DAT","DB","DBT","DB","NAT","NA","NAT","NB","NBT","NB"];
+		}else{
+			thePattern=["DAT","DA","DAT","DB","DBT","dB","NAT","NA","NAT","NB","NBT","nB"];
 		}
 	}
 	return thePattern;
@@ -55,7 +62,6 @@ function Schedules(blue, green, red, purple){
 }
 
 function calendarInitialize(theTeam){
-	var team;
 	if(theTeam!=undefined) m_teams=[theTeam];
 	resetTables();
 	var theDate=getCurrentYear();
@@ -92,8 +98,9 @@ function calendarInitialize(theTeam){
 		}
 	}
 	console.log("focusY=" + focusY);
-	window.scrollTo(0, focusY - 180);
+	window.scrollTo(0, focusY - 200);
 }
+
 
 function insertShiftPix(theTeam, skedCode, theElement){
 	var picPath="";
@@ -115,16 +122,16 @@ function insertShiftPix(theTeam, skedCode, theElement){
 	if(picPath.length>0){
 		var img = document.createElement('img');
 		img.src=picPath;
-		img.height=28;
-		img.width=28;
-		img.alt=picAlt;
+		img.height=32;
+		img.width=32;
+		img.alt=picAlt
 		theElement.appendChild(img);
 	}
 }
 
 function getSkedCodes(objSked, theDate, nextYear){
 	//console.log("getSkedCodes theDate=" + theDate + "; nextYear=" + nextYear);
-	var thePattern, iWeekNumber = 0, datSunday = new Date(m_skedStart), nextSunday=new Date();
+	var iWeekNumber = 0, iSkedDay=0, result="", datSunday = new Date(m_skedStart), nextSunday=new Date();
 	nextSunday=addDays(datSunday,7);
 	while (datSunday < nextYear){
 		if(theDate >= datSunday && theDate < nextSunday) break;
@@ -196,13 +203,27 @@ function getSkedWeek(skedCode, datSunday){
 					result=result + "0";
 				}
 				break;
+			case "nB":
+				if (isWeekend(theDay.getDay())){
+					result=result + (i < 4 ? "N" : "D");
+				}else{
+					result=result + "0";
+				}
+				break;
+			case "dB":
+				if (isWeekend(theDay.getDay())){
+					result=result + (i < 4 ? "D" : "N");
+				}else{
+					result=result + "0";
+				}
+				break;
 		}
 	}
 	return result;
 }
 
-function isWeekday(theDayOfWeek, isDayshift){
-	var result=false;
+		function isWeekday(theDayOfWeek, isDayshift){
+	var result=false
 	if (isDayshift){
 		if ([2,3,4,5].indexOf(theDayOfWeek) >= 0) result=true;
 	}else{
@@ -218,7 +239,7 @@ function isWeekend(theDayOfWeek){
 }
 
 function isTelework(skedCode, theDayOfWeek, isDayshift){
-	var result=false;
+	var result=false
 	if (right(skedCode,1)!="T") return result;
 	if (isDayshift){
 		if ([5].indexOf(theDayOfWeek) >= 0) result=true;
@@ -357,10 +378,10 @@ function btnYearNext_click(){
 }
 
 function rdoTeams_click(){
-	var pick, rdoTeams=document.getElementsByName("rdoTeams");
+	var rdoTeams=document.getElementsByName("rdoTeams");
 	for (var i=0; i<rdoTeams.length; i++){
 		if(rdoTeams[i].checked){
-			pick=rdoTeams[i].value;
+			var pick=rdoTeams[i].value;
 			break;
 		}
 	}
@@ -386,12 +407,12 @@ function rdoTeams_click(){
 }
 
 function getCurrentYear(){
-	var d, lblYear = document.getElementById("lblYear");
+	var lblYear = document.getElementById("lblYear");
 	if (lblYear.innerText.length != 4){
 		var today=new Date();
-		d= new Date(today.getFullYear(),0,1);
+		var d= new Date(today.getFullYear(),0,1);
 	}else{
-		d=new Date(lblYear.innerText,0,1);
+		var d=new Date(lblYear.innerText,0,1);
 	}
 	lblYear.innerText=d.getFullYear();
 	return d;
