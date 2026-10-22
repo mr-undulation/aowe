@@ -9,7 +9,7 @@ var m_teams=["blue","green","red","purple"];
 function getSkedPattern(color){
 	var year = parseInt(document.getElementById("lblYear").innerText);
 	//D=days, N=nights, A=weekdays, B=weekends, T=telework, d=half days, n=half nights;
-	console.log("color=" + color + "; year=" + year + "year<2022=", (year < 2022));
+	//console.log("color=" + color + "; year=" + year + "year<2022=", (year < 2022));
 	if(color=="red"){
 		if(year<2021){
 			thePattern=["NB","NB","NB","NA","NA","NA","DB","DB","DB","DA","DA","DA"];
@@ -18,7 +18,7 @@ function getSkedPattern(color){
 		}else if(year > 2021 && year < 2025){
 			thePattern=["NB","NBT","NB","NAT","NA","NAT","DB","DBT","DB","DAT","DA","DAT"];
 		}else{
-			thePattern=["NB","NB","NB","NAt","NAt","NAt","DBT","DBT","DBT","DA","DA","DA"];
+			thePattern=["dB","NB","NB","NAt","NAt","NAt","nBT","DBT","DBT","DA","DA","DA"];
 		}
 	}else if(color=="purple"){
 		if(year<2021){
@@ -28,7 +28,7 @@ function getSkedPattern(color){
 		}else if(year > 2021 && year < 2025){
 			thePattern=["NAT","NA","NAT","NB","NBT","NB","DAT","DA","DAT","DB","DBT","DB"];
 		}else{
-			thePattern=["NAt","NAt","NAt","NB","NB","NB","DA","DA","DA","DBT","DBT","DBT"];
+			thePattern=["NAt","NAt","NAt","NB","NB","nB","DA","DA","DA","DBT","DBT","dBT"];
 		}
 	}else if(color=="blue"){
 		if(year<2021){
@@ -38,7 +38,7 @@ function getSkedPattern(color){
 		}else if(year > 2021 && year < 2025){
 			thePattern=["DB","DBT","DB","DAT","DA","DAT","NB","NBT","NB","NAT","NA","NAT"];
 		}else{
-			thePattern=["DBT","DBT","DBT","DA","DA","DA","NB","NB","NB","NAt","NAt","NAt"];
+			thePattern=["nBT","DBT","DBT","DA","DA","DA","dB","NB","NB","NAt","NAt","NAt"];
 		}
 	}else if(color=="green"){
 		if(year<2021){
@@ -48,7 +48,7 @@ function getSkedPattern(color){
 		}else if(year > 2021 && year < 2025){
 			thePattern=["DAT","DA","DAT","DB","DBT","DB","NAT","NA","NAT","NB","NBT","NB"];
 		}else{
-			thePattern=["DA","DA","DA","DBT","DBT","DBT","NAt","NAt","NAt","NB","NB","NB"];
+			thePattern=["DA","DA","DA","DBT","DBT","dBT","NAt","NAt","NAt","NB","NB","nBt"];
 		}
 	}
 	return thePattern;
@@ -79,7 +79,7 @@ function calendarInitialize(theTeam){
 		if(theDate.getTime()==today){
 			e.style.borderColor = "#6C7170";
 			focusY= document.getElementById("m" + currMonth).getBoundingClientRect().top;
-			console.log("New focusY=" + focusY + "; currMonth=" + currMonth);			
+			//console.log("New focusY=" + focusY + "; currMonth=" + currMonth);			
 		}
 		if(aryHolidays.indexOf(theDate.getTime())>-1){
 			//console.log("Match for date " + theDate);
@@ -97,7 +97,7 @@ function calendarInitialize(theTeam){
 			theWeek=0;
 		}
 	}
-	console.log("focusY=" + focusY);
+	//console.log("focusY=" + focusY);
 	window.scrollTo(0, focusY - 200);
 }
 
@@ -180,7 +180,7 @@ function getSkedWeek(skedCode, datSunday){
 		switch(left(skedCode,2)){
 			case "DB":
 				if (isWeekend(theDay.getDay())){
-					console.log("skedCode=" + skedCode + "; theDay=" + theDay.getDay() + "; isTelework=" + isTelework(skedCode,theDay.getDay(),true));
+					//console.log("skedCode=" + skedCode + "; theDay=" + theDay.getDay() + "; isTelework=" + isTelework(skedCode,theDay.getDay(),true));
 					result=result + ((isTelework(skedCode,theDay.getDay(),true)) ? "T" : "D");
 				}else{
 					result=result + "0";
@@ -209,7 +209,7 @@ function getSkedWeek(skedCode, datSunday){
 				break;
 			case "nB":
 				if (isWeekend(theDay.getDay())){
-					result=result + (i < 4 ? "N" : "D");
+					result=result + (i < 4 ? "N" : (i==5 ? "T" : "D"));
 				}else{
 					result=result + "0";
 				}
