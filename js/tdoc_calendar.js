@@ -1,6 +1,6 @@
-//JS code for perpetual AOWE shift calendar
-//Version: 13Feb2025
-//Author: Ken Nyman, AOWEB, 571-557-9887, kenneth.d.nyman@nga.mil
+//JS code for perpetual AIWE shift calendar
+//Version: 22Oct2025
+//Author: Ken Nyman, AIWEG, 571-557-9887, kenneth.d.nyman@nga.mil
 
 var m_skedStart = new Date("October 11, 2015");
 
@@ -18,7 +18,7 @@ function getSkedPattern(color){
 		}else if(year > 2021 && year < 2025){
 			thePattern=["NB","NBT","NB","NAT","NA","NAT","DB","DBT","DB","DAT","DA","DAT"];
 		}else{
-			thePattern=["dB","NBT","NB","NAT","NA","NAT","nB","DBT","DB","DAT","DA","DAT"];
+			thePattern=["NB","NB","NB","NAt","NAt","NAt","DBT","DBT","DBT","DA","DA","DA"];
 		}
 	}else if(color=="purple"){
 		if(year<2021){
@@ -28,7 +28,7 @@ function getSkedPattern(color){
 		}else if(year > 2021 && year < 2025){
 			thePattern=["NAT","NA","NAT","NB","NBT","NB","DAT","DA","DAT","DB","DBT","DB"];
 		}else{
-			thePattern=["NAT","NA","NAT","NB","NBT","nB","DAT","DA","DAT","DB","DBT","dB"];
+			thePattern=["NAt","NAt","NAt","NB","NB","NB","DA","DA","DA","DBT","DBT","DBT"];
 		}
 	}else if(color=="blue"){
 		if(year<2021){
@@ -38,7 +38,7 @@ function getSkedPattern(color){
 		}else if(year > 2021 && year < 2025){
 			thePattern=["DB","DBT","DB","DAT","DA","DAT","NB","NBT","NB","NAT","NA","NAT"];
 		}else{
-			thePattern=["nB","DBT","DB","DAT","DA","DAT","dB","NBT","NB","NAT","NA","NAT"];
+			thePattern=["DBT","DBT","DBT","DA","DA","DA","NB","NB","NB","NAt","NAt","NAt"];
 		}
 	}else if(color=="green"){
 		if(year<2021){
@@ -48,7 +48,7 @@ function getSkedPattern(color){
 		}else if(year > 2021 && year < 2025){
 			thePattern=["DAT","DA","DAT","DB","DBT","DB","NAT","NA","NAT","NB","NBT","NB"];
 		}else{
-			thePattern=["DAT","DA","DAT","DB","DBT","dB","NAT","NA","NAT","NB","NBT","nB"];
+			thePattern=["DA","DA","DA","DBT","DBT","DBT","NAt","NAt","NAt","NB","NB","NB"];
 		}
 	}
 	return thePattern;
@@ -107,16 +107,20 @@ function insertShiftPix(theTeam, skedCode, theElement){
 	var picAlt="";
 	switch(skedCode){
 		case "D":
-			picPath="img/" + theTeam + "Day.png";
+			picPath="img/" + theTeam + "Day.gif";
 			picAlt= theTeam + " Day Shift";
 			break;
 		case "N":	
-			picPath="img/" + theTeam + "Night.png";
+			picPath="img/" + theTeam + "Night.gif";
 			picAlt= theTeam + " Night Shift";
 			break;
 		case "T":	
-			picPath="img/" + theTeam + "Tele.png";
+			picPath="img/" + theTeam + "TDay.gif";
 			picAlt= theTeam + " Telework Day";
+			break;
+		case "t":	
+			picPath="img/" + theTeam + "TNight.gif";
+			picAlt= theTeam + " Telework Night";
 			break;
 	}
 	if(picPath.length>0){
@@ -176,7 +180,7 @@ function getSkedWeek(skedCode, datSunday){
 		switch(left(skedCode,2)){
 			case "DB":
 				if (isWeekend(theDay.getDay())){
-					//console.log("skedCode=" + skedCode + "; theDay=" + theDay.getDay() + "; isTelework=" + isTelework(skedCode,theDay.getDay(),true));
+					console.log("skedCode=" + skedCode + "; theDay=" + theDay.getDay() + "; isTelework=" + isTelework(skedCode,theDay.getDay(),true));
 					result=result + ((isTelework(skedCode,theDay.getDay(),true)) ? "T" : "D");
 				}else{
 					result=result + "0";
@@ -191,14 +195,14 @@ function getSkedWeek(skedCode, datSunday){
 				break;
 			case "NB":
 				if (isWeekend(theDay.getDay())){
-					result=result + ((isTelework(skedCode,theDay.getDay(),false)) ? "T" : "N");
+					result=result + ((isTelework(skedCode,theDay.getDay(),false)) ? "t" : "N");
 				}else{
 					result=result + "0";
 				}
 				break;
 			case "NA":
 				if (isWeekday(theDay.getDay(), false)){
-					result=result + ((isTelework(skedCode,theDay.getDay(),false)) ? "T" : "N");
+					result=result + ((isTelework(skedCode,theDay.getDay(),false)) ? "t" : "N");
 				}else{
 					result=result + "0";
 				}
@@ -222,29 +226,27 @@ function getSkedWeek(skedCode, datSunday){
 	return result;
 }
 
-		function isWeekday(theDayOfWeek, isDayshift){
+function isWeekday(theDayOfWeek, isDayshift){
 	var result=false
 	if (isDayshift){
-		if ([2,3,4,5].indexOf(theDayOfWeek) >= 0) result=true;
+		if ([2,3,4,5].includes(theDayOfWeek)) result=true;
 	}else{
-		if ([1,2,3,4].indexOf(theDayOfWeek) >= 0) result=true;
+		if ([1,2,3,4].includes(theDayOfWeek)) result=true;
 	}
 	return result;
 }
 
 function isWeekend(theDayOfWeek){
-	var result=false;
-	if ([0,1,5,6].indexOf(theDayOfWeek) >= 0) result=true;
-	return result;
+	return ([0,1,5,6].includes(theDayOfWeek));
 }
 
 function isTelework(skedCode, theDayOfWeek, isDayshift){
 	var result=false
-	if (right(skedCode,1)!="T") return result;
+	if (right(skedCode,1).toUpperCase() != "T") return result;
 	if (isDayshift){
-		if ([5].indexOf(theDayOfWeek) >= 0) result=true;
+		if ([5].includes(theDayOfWeek)) result=true;
 	}else{
-		if ([1].indexOf(theDayOfWeek) >= 0) result=true;
+		if ([1].includes(theDayOfWeek)) result=true;
 	}
 	return result;
 }
